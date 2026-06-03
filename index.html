@@ -1,0 +1,2494 @@
+<html lang="zh-CN" class=""><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>沙盒应用</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<style>
+/* 全局重置与基础样式 */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: #F4F7F9;
+  color: #333333;
+  line-height: 1.5;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* 主容器：从上到下四个区域 */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 12px;
+  gap: 10px;
+}
+
+/* 区域1：标题区域 */
+.header-section {
+  background-color: #FFFFFF;
+  border: 1px solid #E1E8ED;
+  border-radius: 6px;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.header-logo {
+  width: 56px;
+  height: 56px;
+  background-color: #E6F7FF;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #1890FF;
+  font-weight: bold;
+  font-size: 12px;
+  border: 1px solid #BAE7FF;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.header-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.header-text {
+  flex: 1;
+}
+
+.header-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0050B3;
+  letter-spacing: 1px;
+}
+
+.header-subtitle {
+  font-size: 14px;
+  color: #595959;
+  margin-top: 2px;
+  font-weight: 500;
+}
+
+/* 区域2：功能按钮窄条 */
+.toolbar-section {
+  background-color: #FFFFFF;
+  border: 1px solid #E1E8ED;
+  border-radius: 6px;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.toolbar-btn {
+  padding: 4px 12px;
+  font-size: 13px;
+  border: 1px solid #D9D9D9;
+  border-radius: 4px;
+  background-color: #FFFFFF;
+  color: #595959;
+  cursor: pointer;
+  font-weight: 500;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toolbar-btn:hover {
+  background-color: #F5F5F5;
+  color: #0050B3;
+  border-color: #0050B3;
+}
+
+.toolbar-btn.primary {
+  background-color: #1890FF;
+  color: #FFFFFF;
+  border-color: #1890FF;
+}
+
+.toolbar-btn.primary:hover {
+  background-color: #096DD9;
+  border-color: #096DD9;
+}
+
+.toolbar-spacer {
+  flex: 1;
+}
+
+/* 区域3：参赛队伍 */
+.teams-section {
+  background-color: #FFFFFF;
+  border: 1px solid #E1E8ED;
+  border-radius: 6px;
+  padding: 10px 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  min-height: 56px;
+}
+
+.team-card {
+  flex: 0 0 calc((100% - 70px) / 8);
+  padding: 8px 6px;
+  background-color: #F0F8FF;
+  border: 1px solid #BAE7FF;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #0050B3;
+  font-weight: 600;
+  height: 56px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.team-name {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  overflow: hidden;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+/* 区域4：主体内容区（左右分栏） */
+.main-content {
+  flex: 1;
+  display: flex;
+  gap: 10px;
+  min-height: 0;
+}
+
+/* 区域4左侧：题目库 */
+.question-bank {
+  width: 220px;
+  background-color: #FFFFFF;
+  border: 1px solid #E1E8ED;
+  border-radius: 6px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.bank-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #333333;
+  border-bottom: 1px solid #E1E8ED;
+  padding-bottom: 8px;
+}
+
+.bank-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bank-item {
+  padding: 8px 10px;
+  font-size: 13px;
+  color: #595959;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.bank-item:hover {
+  background-color: #F5F5F5;
+}
+
+.bank-item.active {
+  background-color: #E6F7FF;
+  color: #0050B3;
+  font-weight: 500;
+}
+
+.bank-questions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 6px 10px 8px;
+  border-top: 1px dashed #E1E8ED;
+}
+
+.bank-question-num {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #F5F5F5;
+  color: #595959;
+  border: 1px solid #E1E8ED;
+  transition: all 0.2s;
+}
+
+.bank-question-num:hover {
+  background-color: #E6F7FF;
+  color: #0050B3;
+  border-color: #1890FF;
+}
+
+.bank-question-num.current {
+  background-color: #1890FF;
+  color: #FFFFFF;
+  border-color: #1890FF;
+}
+
+.bank-question-num.revealed {
+  background-color: #F5F5F5;
+  color: #BFBFBF;
+  border-color: #E8E8E8;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+/* 区域4右侧：上下分栏 */
+.gameplay-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* 环节切换区域 */
+.stage-switcher {
+  background-color: #FFFFFF;
+  border: 1px solid #E1E8ED;
+  border-radius: 6px;
+  padding: 8px 12px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.stage-btn {
+  padding: 4px 16px;
+  font-size: 13px;
+  border: 1px solid #D9D9D9;
+  border-radius: 4px;
+  background-color: #FFFFFF;
+  color: #595959;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.stage-btn:hover {
+  background-color: #F5F5F5;
+  border-color: #0050B3;
+  color: #0050B3;
+}
+
+.stage-btn.active {
+  background-color: #1890FF;
+  color: #FFFFFF;
+  border-color: #1890FF;
+}
+
+/* 题目展示区域 */
+.question-display {
+  flex: 1;
+  background-color: #FFFFFF;
+  border: 1px solid #E1E8ED;
+  border-radius: 6px;
+  padding: 0;
+  display: block;
+  overflow: hidden;
+  position: relative;
+}
+
+.question-content-wrapper {
+  padding: 20px;
+  transform-origin: top left;
+  transition: transform 0.2s ease;
+}
+
+.question-header {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #E1E8ED;
+}
+
+.question-text {
+  font-size: 18px;
+  font-weight: 500;
+  color: #333333;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.question-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.option-item {
+  padding: 10px 16px;
+  border: 1px solid #E1E8ED;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #595959;
+  cursor: pointer;
+  background-color: #FFFFFF;
+}
+
+.option-item:hover {
+  background-color: #F5F5F5;
+  border-color: #BAE7FF;
+}
+
+/* 全屏显示按钮 */
+.fullscreen-toggle-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  background: rgba(255,255,255,0.9);
+  border: 1px solid #D9D9D9;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #595959;
+  font-size: 14px;
+  z-index: 10;
+  transition: all 0.2s;
+}
+
+.fullscreen-toggle-btn:hover {
+  background: #E6F7FF;
+  color: #1890FF;
+  border-color: #1890FF;
+}
+
+/* 全屏模式 */
+.question-display.fullscreen {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 10000 !important;
+  border-radius: 0 !important;
+  border: none !important;
+  background-color: #FFFFFF;
+}
+
+.question-display.fullscreen .question-content-wrapper {
+  padding: 40px 60px !important;
+}
+
+.question-display.fullscreen .fullscreen-toggle-btn {
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  border-color: rgba(255,255,255,0.3);
+  width: 40px;
+  height: 40px;
+  font-size: 16px;
+}
+
+.question-display.fullscreen .fullscreen-toggle-btn:hover {
+  background: rgba(0,0,0,0.7);
+}
+
+/* 倒计时面板 */
+.countdown-panel {
+  background: linear-gradient(135deg, #001529 0%, #003a70 100%);
+  border-radius: 4px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  height: 30px;
+}
+
+.countdown-display {
+  font-size: 18px;
+  font-weight: 700;
+  color: #FFFFFF;
+  min-width: 24px;
+  text-align: center;
+  line-height: 1;
+}
+
+.countdown-label {
+  font-size: 12px;
+  color: rgba(255,255,255,0.7);
+  font-weight: 500;
+}
+
+.countdown-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.countdown-input {
+  width: 36px;
+  height: 22px;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 3px;
+  font-size: 12px;
+  background: rgba(255,255,255,0.15);
+  color: #FFFFFF;
+  padding: 0;
+}
+
+.countdown-btn {
+  padding: 2px 6px;
+  font-size: 11px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight: 500;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  transition: all 0.2s;
+}
+
+.countdown-start {
+  background-color: #52c41a;
+  color: #FFFFFF;
+}
+
+.countdown-start:hover {
+  background-color: #389e0d;
+}
+
+.countdown-pause {
+  background-color: #faad14;
+  color: #FFFFFF;
+  display: none;
+}
+
+.countdown-pause:hover {
+  background-color: #d48806;
+}
+
+.countdown-reset {
+  background-color: rgba(255,255,255,0.2);
+  color: #FFFFFF;
+}
+
+.countdown-reset:hover {
+  background-color: rgba(255,255,255,0.35);
+}
+
+/* 响应式布局调整 */
+@media (max-width: 900px) {
+  .main-content {
+    flex-direction: column;
+  }
+  .question-bank {
+    width: 100%;
+    max-height: 150px;
+  }
+}
+
+@media (max-width: 600px) {
+  .header-section {
+    flex-direction: column;
+    text-align: center;
+    padding: 12px;
+  }
+  .header-text {
+    margin-left: 0;
+  }
+  .toolbar-section {
+    justify-content: center;
+  }
+  .toolbar-spacer {
+    display: none;
+  }
+}
+
+/* 全屏排名面板 */
+.ranking-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #001529 0%, #003a70 100%);
+  z-index: 9999;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 20px 40px;
+  overflow-y: auto;
+}
+
+.ranking-overlay.active {
+  display: flex;
+}
+
+.ranking-close {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  width: 44px;
+  height: 44px;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.ranking-close:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+.ranking-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 20px;
+  margin-top: 10px;
+  letter-spacing: 4px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  flex-shrink: 0;
+}
+
+.ranking-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-flow: row;
+  gap: 12px;
+  width: 100%;
+  max-width: 1000px;
+}
+
+.ranking-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 24px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+
+.ranking-item:hover {
+  background: rgba(255,255,255,0.18);
+}
+
+.ranking-item.top1 {
+  background: linear-gradient(135deg, rgba(255,215,0,0.25), rgba(255,193,7,0.15));
+  border-color: rgba(255,215,0,0.5);
+}
+
+.ranking-item.top2 {
+  background: linear-gradient(135deg, rgba(192,192,192,0.2), rgba(169,169,169,0.12));
+  border-color: rgba(192,192,192,0.4);
+}
+
+.ranking-item.top3 {
+  background: linear-gradient(135deg, rgba(205,127,50,0.2), rgba(184,115,51,0.12));
+  border-color: rgba(205,127,50,0.4);
+}
+
+.ranking-rank {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: #FFFFFF;
+  background: rgba(255,255,255,0.15);
+  flex-shrink: 0;
+}
+
+.ranking-item.top1 .ranking-rank {
+  background: linear-gradient(135deg, #FFD700, #FFA000);
+  color: #001529;
+}
+
+.ranking-item.top2 .ranking-rank {
+  background: linear-gradient(135deg, #C0C0C0, #9E9E9E);
+  color: #001529;
+}
+
+.ranking-item.top3 .ranking-rank {
+  background: linear-gradient(135deg, #CD7F32, #B87333);
+  color: #FFFFFF;
+}
+
+.ranking-team-name {
+  flex: 1;
+  font-size: 20px;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.ranking-team-score {
+  font-size: 26px;
+  font-weight: 700;
+  color: #FFD700;
+  min-width: 70px;
+  text-align: right;
+}
+
+.ranking-team-score span {
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.6);
+  margin-left: 4px;
+}
+
+/* 抢答模式样式 */
+.team-card.buzzer-mode {
+  height: 80px;
+}
+
+.buzzer-btn {
+  margin-top: 4px;
+  padding: 3px 0;
+  width: 100%;
+  background: linear-gradient(135deg, #ff4d4f, #cf1322);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 2px;
+  animation: buzzer-pulse 1.5s infinite;
+  transition: all 0.2s;
+}
+
+.buzzer-btn:hover {
+  background: linear-gradient(135deg, #cf1322, #a8071a);
+  transform: scale(1.05);
+}
+
+@keyframes buzzer-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 77, 79, 0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(255, 77, 79, 0); }
+}
+
+.team-card.buzzer-winner {
+  border-color: #52c41a !important;
+  background: linear-gradient(135deg, #f6ffed, #d9f7be) !important;
+  box-shadow: 0 0 0 3px rgba(82, 196, 26, 0.3), 0 4px 12px rgba(82, 196, 26, 0.2) !important;
+}
+
+.buzzer-winner-label {
+  font-size: 11px;
+  color: #389e0d;
+  font-weight: 700;
+  margin-top: 2px;
+  animation: winner-bounce 0.5s ease;
+}
+
+@keyframes winner-bounce {
+  0% { transform: scale(0.5); opacity: 0; }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.team-card.buzzer-locked {
+  opacity: 0.35;
+  pointer-events: none;
+  filter: grayscale(0.5);
+}
+
+.toolbar-btn.buzzer-active {
+  background-color: #ff4d4f !important;
+  color: #FFFFFF !important;
+  border-color: #ff4d4f !important;
+  animation: buzzer-btn-glow 1.5s infinite;
+}
+
+@keyframes buzzer-btn-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 77, 79, 0.4); }
+  50% { box-shadow: 0 0 0 4px rgba(255, 77, 79, 0); }
+}
+
+/* 手机抢答页面 */
+.buzzer-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  background: linear-gradient(135deg, #001529 0%, #003a70 100%);
+}
+
+.buzzer-page-team-name {
+  font-size: 28px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.buzzer-page-btn {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff4d4f, #cf1322);
+  color: #FFFFFF;
+  font-size: 36px;
+  font-weight: 700;
+  border: 6px solid rgba(255,255,255,0.3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 30px rgba(255, 77, 79, 0.5);
+  transition: all 0.2s;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  animation: buzzer-page-pulse 1.5s infinite;
+}
+
+.buzzer-page-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 40px rgba(255, 77, 79, 0.7);
+}
+
+.buzzer-page-btn:active {
+  transform: scale(0.95);
+}
+
+.buzzer-page-btn.disabled {
+  background: linear-gradient(135deg, #8c8c8c, #595959);
+  box-shadow: none;
+  cursor: not-allowed;
+  border-color: rgba(255,255,255,0.1);
+  animation: none;
+}
+
+.buzzer-page-status {
+  margin-top: 30px;
+  font-size: 18px;
+  color: rgba(255,255,255,0.7);
+  text-align: center;
+}
+
+.buzzer-page-status.success {
+  color: #52c41a;
+  font-weight: 700;
+  font-size: 22px;
+}
+
+.buzzer-page-status.fail {
+  color: #ff4d4f;
+  font-weight: 600;
+}
+
+.buzzer-page-back {
+  margin-top: 40px;
+  padding: 10px 24px;
+  background: rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.8);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.buzzer-page-back:hover {
+  background: rgba(255,255,255,0.25);
+  color: #fff;
+}
+
+.buzzer-page-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 30px;
+  text-align: center;
+  letter-spacing: 2px;
+}
+
+.buzzer-team-select-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  max-width: 400px;
+}
+
+.buzzer-team-select-btn {
+  padding: 14px 28px;
+  background: rgba(255,255,255,0.15);
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 8px;
+  color: #FFFFFF;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 120px;
+  text-align: center;
+}
+
+.buzzer-team-select-btn:hover {
+  background: rgba(255,255,255,0.25);
+  border-color: rgba(255,255,255,0.5);
+  transform: scale(1.05);
+}
+
+.buzzer-team-select-btn:active {
+  transform: scale(0.95);
+}
+
+@keyframes buzzer-page-pulse {
+  0%, 100% { box-shadow: 0 8px 30px rgba(255, 77, 79, 0.5); }
+  50% { box-shadow: 0 8px 30px rgba(255, 77, 79, 0.2), 0 0 0 20px rgba(255, 77, 79, 0); }
+}
+    </style>
+<style id="sandbox-scrollbar-style">
+        html, body {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        html::-webkit-scrollbar, body::-webkit-scrollbar {
+            display: none;
+        }
+    </style></head>
+<body class="">
+<div class="app-container">
+  <!-- 区域1：标题区域 -->
+  <header class="header-section">
+    <div class="header-logo" id="header-logo" title="点击上传Logo图片">安全月</div>
+    <div class="header-text">
+      <h1 class="header-title">2026年安全生产月知识竞赛</h1>
+      <p class="header-subtitle">人人讲安全，个个会应急，排查整治风险隐患</p>
+    </div>
+  </header>
+
+  <!-- 区域2：功能按钮窄条 -->
+  <nav class="toolbar-section">
+    <button class="toolbar-btn primary" id="btn-import">导入题库</button>
+    <button class="toolbar-btn" id="btn-clear">清空</button>
+    <button class="toolbar-btn" id="btn-template">模板下载</button>
+    <button class="toolbar-btn" id="btn-rules">规则</button>
+    <div class="toolbar-spacer"></div>
+    <button class="toolbar-btn" id="btn-ranking"><i class="fas fa-trophy"></i> 实时排名</button>
+    <div class="countdown-panel" id="countdown-panel">
+      <span class="countdown-label"><i class="fas fa-clock"></i></span>
+      <div class="countdown-display" id="countdown-display">30</div>
+      <div class="countdown-controls">
+        <input type="number" id="countdown-input" class="countdown-input" value="30" min="5" max="600">
+        <button class="countdown-btn countdown-start" id="countdown-start"><i class="fas fa-play"></i></button>
+        <button class="countdown-btn countdown-pause" id="countdown-pause"><i class="fas fa-pause"></i></button>
+        <button class="countdown-btn countdown-reset" id="countdown-reset"><i class="fas fa-redo"></i></button>
+      </div>
+    </div>
+    <button class="toolbar-btn" id="btn-custom-stage"><i class="fas fa-list-ol"></i> 自定义环节</button>
+    <button class="toolbar-btn" id="btn-team-count">自定义队伍</button>
+    <button class="toolbar-btn" id="btn-add-image"><i class="fas fa-image"></i> 添加图片题</button>
+    <button class="toolbar-btn" id="btn-buzzer"><i class="fas fa-bell"></i> 抢答模式</button>
+    <button class="toolbar-btn" id="btn-buzzer-reset" style="display:none"><i class="fas fa-redo"></i> 重置抢答</button>
+    <button class="toolbar-btn" id="btn-share-buzzer"><i class="fas fa-share-alt"></i> 分享抢答链接</button>
+  </nav>
+
+  <!-- 区域3：参赛队伍 -->
+  <section class="teams-section" id="teams-container"><div class="team-card" style="cursor: pointer;"><div class="team-name">成本物资代表队<i class="fas fa-pen" style="font-size:11px;color:#8c8c8c;flex-shrink:0" title="双击编辑名称"></i></div><div style="font-size: 14px; color: rgb(24, 144, 255); font-weight: 700; margin-top: 3px; cursor: pointer;">0分 <i class="fas fa-pen" style="font-size:10px;color:#8c8c8c" title="点击修改分数"></i></div></div><div class="team-card" style="cursor: pointer;"><div class="team-name">综合财务代表队<i class="fas fa-pen" style="font-size:11px;color:#8c8c8c;flex-shrink:0" title="双击编辑名称"></i></div><div style="font-size: 14px; color: rgb(24, 144, 255); font-weight: 700; margin-top: 3px; cursor: pointer;">0分 <i class="fas fa-pen" style="font-size:10px;color:#8c8c8c" title="点击修改分数"></i></div></div><div class="team-card" style="cursor: pointer;"><div class="team-name">采剥代表队<i class="fas fa-pen" style="font-size:11px;color:#8c8c8c;flex-shrink:0" title="双击编辑名称"></i></div><div style="font-size: 14px; color: rgb(24, 144, 255); font-weight: 700; margin-top: 3px; cursor: pointer;">0分 <i class="fas fa-pen" style="font-size:10px;color:#8c8c8c" title="点击修改分数"></i></div></div><div class="team-card" style="cursor: pointer;"><div class="team-name">胶排代表队<i class="fas fa-pen" style="font-size:11px;color:#8c8c8c;flex-shrink:0" title="双击编辑名称"></i></div><div style="font-size: 14px; color: rgb(24, 144, 255); font-weight: 700; margin-top: 3px; cursor: pointer;">0分 <i class="fas fa-pen" style="font-size:10px;color:#8c8c8c" title="点击修改分数"></i></div></div><div class="team-card" style="cursor: pointer;"><div class="team-name">设备代表队<i class="fas fa-pen" style="font-size:11px;color:#8c8c8c;flex-shrink:0" title="双击编辑名称"></i></div><div style="font-size: 14px; color: rgb(24, 144, 255); font-weight: 700; margin-top: 3px; cursor: pointer;">0分 <i class="fas fa-pen" style="font-size:10px;color:#8c8c8c" title="点击修改分数"></i></div></div><div class="team-card" style="cursor: pointer;"><div class="team-name">工程管理代表队<i class="fas fa-pen" style="font-size:11px;color:#8c8c8c;flex-shrink:0" title="双击编辑名称"></i></div><div style="font-size: 14px; color: rgb(24, 144, 255); font-weight: 700; margin-top: 3px; cursor: pointer;">0分 <i class="fas fa-pen" style="font-size:10px;color:#8c8c8c" title="点击修改分数"></i></div></div><div class="team-card" style="cursor: pointer;"><div class="team-name">达力爆破代表队<i class="fas fa-pen" style="font-size:11px;color:#8c8c8c;flex-shrink:0" title="双击编辑名称"></i></div><div style="font-size: 14px; color: rgb(24, 144, 255); font-weight: 700; margin-top: 3px; cursor: pointer;">0分 <i class="fas fa-pen" style="font-size:10px;color:#8c8c8c" title="点击修改分数"></i></div></div><div class="team-card" style="cursor: pointer;"><div class="team-name">云南集拓代表队<i class="fas fa-pen" style="font-size:11px;color:#8c8c8c;flex-shrink:0" title="双击编辑名称"></i></div><div style="font-size: 14px; color: rgb(24, 144, 255); font-weight: 700; margin-top: 3px; cursor: pointer;">0分 <i class="fas fa-pen" style="font-size:10px;color:#8c8c8c" title="点击修改分数"></i></div></div><div class="team-card" style="cursor: pointer;"><div class="team-name">云南乐志代表队<i class="fas fa-pen" style="font-size:11px;color:#8c8c8c;flex-shrink:0" title="双击编辑名称"></i></div><div style="font-size: 14px; color: rgb(24, 144, 255); font-weight: 700; margin-top: 3px; cursor: pointer;">0分 <i class="fas fa-pen" style="font-size:10px;color:#8c8c8c" title="点击修改分数"></i></div></div><div class="team-card" style="cursor: pointer;"><div class="team-name">云南交建代表队<i class="fas fa-pen" style="font-size:11px;color:#8c8c8c;flex-shrink:0" title="双击编辑名称"></i></div><div style="font-size: 14px; color: rgb(24, 144, 255); font-weight: 700; margin-top: 3px; cursor: pointer;">0分 <i class="fas fa-pen" style="font-size:10px;color:#8c8c8c" title="点击修改分数"></i></div></div><div class="team-card" style="cursor: pointer;"><div class="team-name">山水工贸代表队<i class="fas fa-pen" style="font-size:11px;color:#8c8c8c;flex-shrink:0" title="双击编辑名称"></i></div><div style="font-size: 14px; color: rgb(24, 144, 255); font-weight: 700; margin-top: 3px; cursor: pointer;">0分 <i class="fas fa-pen" style="font-size:10px;color:#8c8c8c" title="点击修改分数"></i></div></div><div class="team-card" style="cursor: pointer;"><div class="team-name">地矿地质代表队<i class="fas fa-pen" style="font-size:11px;color:#8c8c8c;flex-shrink:0" title="双击编辑名称"></i></div><div style="font-size: 14px; color: rgb(24, 144, 255); font-weight: 700; margin-top: 3px; cursor: pointer;">0分 <i class="fas fa-pen" style="font-size:10px;color:#8c8c8c" title="点击修改分数"></i></div></div><div class="team-card" style="cursor: pointer;"><div class="team-name">易初明通代表队<i class="fas fa-pen" style="font-size:11px;color:#8c8c8c;flex-shrink:0" title="双击编辑名称"></i></div><div style="font-size: 14px; color: rgb(24, 144, 255); font-weight: 700; margin-top: 3px; cursor: pointer;">0分 <i class="fas fa-pen" style="font-size:10px;color:#8c8c8c" title="点击修改分数"></i></div></div><div class="team-card" style="cursor: pointer;"><div class="team-name">嵩掘机电代表队<i class="fas fa-pen" style="font-size:11px;color:#8c8c8c;flex-shrink:0" title="双击编辑名称"></i></div><div style="font-size: 14px; color: rgb(24, 144, 255); font-weight: 700; margin-top: 3px; cursor: pointer;">0分 <i class="fas fa-pen" style="font-size:10px;color:#8c8c8c" title="点击修改分数"></i></div></div><div class="team-card" style="cursor: pointer;"><div class="team-name">云利特代表队<i class="fas fa-pen" style="font-size:11px;color:#8c8c8c;flex-shrink:0" title="双击编辑名称"></i></div><div style="font-size: 14px; color: rgb(24, 144, 255); font-weight: 700; margin-top: 3px; cursor: pointer;">0分 <i class="fas fa-pen" style="font-size:10px;color:#8c8c8c" title="点击修改分数"></i></div></div><div class="team-card" style="cursor: pointer;"><div class="team-name">君盛卓代表队<i class="fas fa-pen" style="font-size:11px;color:#8c8c8c;flex-shrink:0" title="双击编辑名称"></i></div><div style="font-size: 14px; color: rgb(24, 144, 255); font-weight: 700; margin-top: 3px; cursor: pointer;">0分 <i class="fas fa-pen" style="font-size:10px;color:#8c8c8c" title="点击修改分数"></i></div></div></section>
+
+  <!-- 区域4：主体内容区（左右分栏） -->
+  <main class="main-content">
+    <!-- 左侧：题目库 -->
+    <aside class="question-bank">
+      <div class="bank-title">题目库</div>
+      <div class="bank-list" id="bank-list"><div class="bank-item active">你说我猜 (0题)</div></div>
+    </aside>
+
+    <!-- 右侧：上下分栏 -->
+    <div class="gameplay-area">
+      <!-- 上面：环节切换区域 -->
+      <div class="stage-switcher" id="stage-switcher"><button class="stage-btn active">你说我猜</button><button class="stage-btn">看图识隐患</button><button class="stage-btn">团队大比拼（必答题）</button><button class="stage-btn">团队大比拼（抢答题）</button></div>
+
+      <!-- 下面：题目展示区域 -->
+      <div class="question-display" id="question-display">
+        <button class="fullscreen-toggle-btn" id="fullscreen-toggle" title="全屏显示"><i class="fas fa-expand"></i></button>
+        <div class="question-content-wrapper" id="question-content-wrapper" style="width: 100%;">
+          <div class="question-header" id="question-header">暂无题目</div>
+          <div class="question-text" id="question-text">请先导入题库或切换到有题目的环节</div>
+          <div class="question-options" id="question-options"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- 全屏排名面板 -->
+<div class="ranking-overlay" id="ranking-overlay">
+  <button class="ranking-close" id="ranking-close"><i class="fas fa-times"></i></button>
+  <div class="ranking-title">实 时 排 名</div>
+  <div class="ranking-list" id="ranking-list">
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+<script>
+if (!window.api) {
+    window.api = {
+        async save(appId, data) {
+            try {
+                localStorage.setItem("quiz_" + appId, JSON.stringify(data));
+                return { success: true };
+            } catch (e) {
+                console.error(e);
+                return { success: false };
+            }
+        },
+        async load(appId) {
+            try {
+                const data = localStorage.getItem("quiz_" + appId);
+                return {
+                    success: true,
+                    data: data ? JSON.parse(data) : {}
+                };
+            } catch (e) {
+                console.error(e);
+                return { success: false, data: {} };
+            }
+        }
+    };
+}
+</script>
+
+<script>
+
+</script>
+<script>
+const appId = new URLSearchParams(window.location.search).get('app_id') || 'safety_quiz';
+
+let appData = {
+  logo: '',
+  teamCount: 16,
+  teams: [],
+  stages: ['你说我猜', '看图识隐患', '团队大比拼（必答题）', '团队大比拼（抢答题）'],
+  questions: {},
+  currentStage: '你说我猜',
+  currentQuestionIndex: 0,
+  currentTeam: null,
+  showQuestion: false,
+  selectedOption: null,
+  buzzerMode: false,
+  buzzerLocked: false,
+  buzzerWinner: null,
+  buzzerSignal: null,
+  buzzerCountdown: 0
+};
+
+function initDefaultTeams() {
+  const defaultNames = ['成本物资代表队', '综合财务代表队', '采剥代表队', '胶排代表队', '设备代表队', '工程管理代表队', '达力爆破代表队', '云南集拓代表队', '云南乐志代表队', '云南交建代表队', '山水工贸代表队', '地矿地质代表队', '易初明通代表队', '嵩掘机电代表队', '云利特代表队', '君盛卓代表队'];
+  appData.teams = [];
+  for (let i = 1; i <= appData.teamCount; i++) {
+    const name = i <= defaultNames.length ? defaultNames[i - 1] : '第' + i + '队';
+    appData.teams.push({ id: i, name: name, score: 0 });
+  }
+}
+
+async function loadData() {
+  const runtimeAppId = appId;
+  if (!runtimeAppId) return;
+  try {
+    const response = await window.api.load(runtimeAppId);
+    if (response && response.data && Object.keys(response.data).length > 0) {
+      const saved = response.data;
+      if (saved.teamCount) appData.teamCount = saved.teamCount;
+      if (saved.teams && saved.teams.length > 0) appData.teams = saved.teams;
+      if (saved.stages && saved.stages.length > 0) appData.stages = saved.stages;
+      if (saved.questions) appData.questions = saved.questions;
+      if (saved.currentStage) appData.currentStage = saved.currentStage;
+      if (saved.currentQuestionIndex !== undefined) appData.currentQuestionIndex = saved.currentQuestionIndex;
+      if (saved.logo) appData.logo = saved.logo;
+    }
+  } catch (e) {
+    console.error(e);
+  }
+  if (!appData.teams || appData.teams.length === 0) initDefaultTeams();
+  appData.buzzerCountdown = 0;
+  renderAll();
+}
+
+async function saveData() {
+  const runtimeAppId = appId;
+  if (!runtimeAppId) {
+    Swal.fire({ icon: 'error', title: '错误', text: '缺少应用ID' });
+    return;
+  }
+  try {
+    const response = await window.api.save(runtimeAppId, appData);
+    if (!response.success) {
+      Swal.fire({ icon: 'error', title: '保存失败', text: '数据保存失败，请重试' });
+    }
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function renderLogo() {
+  const logoEl = document.getElementById('header-logo');
+  if (!logoEl) return;
+  if (appData.logo) {
+    logoEl.innerHTML = '<img src="' + appData.logo + '" alt="Logo">';
+  } else {
+    logoEl.textContent = '安全月';
+  }
+}
+
+function handleLogoUpload() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      appData.logo = evt.target.result;
+      renderLogo();
+      await saveData();
+    };
+    reader.readAsDataURL(file);
+  });
+  input.click();
+}
+
+function renderAll() {
+  renderLogo();
+  renderTeams();
+  renderBankList();
+  renderStageSwitcher();
+  renderQuestion();
+  updateBuzzerButton();
+}
+
+function renderTeams() {
+  const container = document.getElementById('teams-container');
+  container.innerHTML = '';
+  appData.teams.forEach((team) => {
+    const card = document.createElement('div');
+    card.className = 'team-card';
+    card.style.cursor = 'pointer';
+    if (appData.buzzerMode) {
+      card.classList.add('buzzer-mode');
+      if (appData.buzzerLocked && appData.buzzerWinner && appData.buzzerWinner.id === team.id) {
+        card.classList.add('buzzer-winner');
+      } else if (appData.buzzerLocked) {
+        card.classList.add('buzzer-locked');
+      }
+    }
+    card.innerHTML = '<div class="team-name">' + team.name + '<i class="fas fa-pen" style="font-size:11px;color:#8c8c8c;flex-shrink:0" title="双击编辑名称"></i></div>';
+    const scoreDiv = document.createElement('div');
+    scoreDiv.style.cssText = 'font-size:14px;color:#1890FF;font-weight:700;margin-top:3px;cursor:pointer';
+    scoreDiv.innerHTML = team.score + '分 <i class="fas fa-pen" style="font-size:10px;color:#8c8c8c" title="点击修改分数"></i>';
+    scoreDiv.addEventListener('click', (e) => {
+      e.stopPropagation();
+      editTeamScore(team);
+    });
+    card.appendChild(scoreDiv);
+    if (appData.buzzerMode && !appData.buzzerLocked) {
+      const buzzerBtn = document.createElement('button');
+      buzzerBtn.className = 'buzzer-btn';
+      if (appData.buzzerCountdown > 0) {
+        buzzerBtn.textContent = appData.buzzerCountdown;
+        buzzerBtn.style.animation = 'none';
+        buzzerBtn.style.cursor = 'not-allowed';
+        buzzerBtn.style.opacity = '0.6';
+      } else {
+        buzzerBtn.textContent = '抢答';
+      }
+      buzzerBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        handleBuzzer(team);
+      });
+      card.appendChild(buzzerBtn);
+    }
+    if (appData.buzzerMode && appData.buzzerLocked && appData.buzzerWinner && appData.buzzerWinner.id === team.id) {
+      const winnerLabel = document.createElement('div');
+      winnerLabel.className = 'buzzer-winner-label';
+      winnerLabel.innerHTML = '<i class="fas fa-check-circle"></i> 抢答成功';
+      card.appendChild(winnerLabel);
+    }
+    if (appData.currentTeam && appData.currentTeam.id === team.id && !(appData.buzzerMode && appData.buzzerLocked && appData.buzzerWinner && appData.buzzerWinner.id === team.id)) {
+      card.style.borderColor = '#FA8C16';
+      card.style.backgroundColor = '#FFF7E6';
+      card.style.boxShadow = '0 0 0 2px rgba(250,140,22,0.25)';
+      scoreDiv.style.color = '#FA8C16';
+    }
+    card.addEventListener('click', () => {
+      if (appData.buzzerMode && !appData.buzzerLocked) {
+        handleBuzzer(team);
+        return;
+      }
+      appData.currentTeam = (appData.currentTeam && appData.currentTeam.id === team.id) ? null : team;
+      renderTeams();
+      renderQuestion();
+    });
+    card.addEventListener('dblclick', () => editTeamName(team));
+    container.appendChild(card);
+  });
+}
+
+function editTeamName(team) {
+  Swal.fire({
+    title: '修改队伍名称',
+    input: 'text',
+    inputValue: team.name,
+    showCancelButton: true,
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    inputValidator: (value) => {
+      if (!value || !value.trim()) return '请输入队伍名称';
+    }
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      team.name = result.value.trim();
+      renderTeams();
+      await saveData();
+    }
+  });
+}
+
+function editTeamScore(team) {
+  showScorePanel(team);
+}
+
+function showScorePanel(team) {
+  const buildTitle = () => team.name + ' - 当前 ' + team.score + ' 分';
+  Swal.fire({
+    title: buildTitle(),
+    html: '<div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:10px">' +
+      '<button id="swal-add5" style="padding:8px 20px;background:#52c41a;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:14px;font-weight:600"><i class="fas fa-plus"></i> 5分</button>' +
+      '<button id="swal-add10" style="padding:8px 20px;background:#1890ff;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:14px;font-weight:600"><i class="fas fa-plus"></i> 10分</button>' +
+      '<button id="swal-add20" style="padding:8px 20px;background:#722ed1;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:14px;font-weight:600"><i class="fas fa-plus"></i> 20分</button>' +
+      '<button id="swal-sub5" style="padding:8px 20px;background:#faad14;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:14px;font-weight:600"><i class="fas fa-minus"></i> 5分</button>' +
+      '<button id="swal-sub10" style="padding:8px 20px;background:#ff4d4f;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:14px;font-weight:600"><i class="fas fa-minus"></i> 10分</button>' +
+      '<button id="swal-reset" style="padding:8px 20px;background:#8c8c8c;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:14px;font-weight:600"><i class="fas fa-undo"></i> 归零</button>' +
+      '</div>' +
+      '<div style="display:flex;align-items:center;gap:8px;justify-content:center;margin-top:14px;padding-top:12px;border-top:1px solid #e8e8e8">' +
+      '<span style="font-size:13px;color:#595959">自定义：</span>' +
+      '<input id="swal-custom-score" type="number" value="10" style="width:60px;height:32px;text-align:center;border:1px solid #d9d9d9;border-radius:4px;font-size:14px">' +
+      '<button id="swal-custom-add" style="padding:6px 16px;background:#52c41a;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:13px;font-weight:600"><i class="fas fa-plus"></i> 加分</button>' +
+      '<button id="swal-custom-sub" style="padding:6px 16px;background:#ff4d4f;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:13px;font-weight:600"><i class="fas fa-minus"></i> 减分</button>' +
+      '</div>',
+    showConfirmButton: false,
+    showCloseButton: true,
+    allowOutsideClick: true
+  });
+  setTimeout(() => {
+    const updateTitle = () => {
+      const titleEl = document.querySelector('.swal2-title');
+      if (titleEl) titleEl.textContent = buildTitle();
+    };
+    const addScore = async (points) => {
+      team.score += points;
+      renderTeams();
+      updateTitle();
+      await saveData();
+    };
+    const resetScore = async () => {
+      team.score = 0;
+      renderTeams();
+      updateTitle();
+      await saveData();
+    };
+    document.getElementById('swal-add5')?.addEventListener('click', () => addScore(5));
+    document.getElementById('swal-add10')?.addEventListener('click', () => addScore(10));
+    document.getElementById('swal-add20')?.addEventListener('click', () => addScore(20));
+    document.getElementById('swal-sub5')?.addEventListener('click', () => addScore(-5));
+    document.getElementById('swal-sub10')?.addEventListener('click', () => addScore(-10));
+    document.getElementById('swal-reset')?.addEventListener('click', () => resetScore());
+    document.getElementById('swal-custom-add')?.addEventListener('click', () => {
+      const val = parseInt(document.getElementById('swal-custom-score').value) || 0;
+      if (val !== 0) addScore(val);
+    });
+    document.getElementById('swal-custom-sub')?.addEventListener('click', () => {
+      const val = parseInt(document.getElementById('swal-custom-score').value) || 0;
+      if (val !== 0) addScore(-val);
+    });
+  }, 50);
+}
+
+function renderBankList() {
+  const container = document.getElementById('bank-list');
+  container.innerHTML = '';
+  const questions = appData.questions[appData.currentStage] || [];
+  // 显示当前环节标题
+  const titleEl = document.createElement('div');
+  titleEl.className = 'bank-item active';
+  titleEl.textContent = appData.currentStage + ' (' + questions.length + '题)';
+  container.appendChild(titleEl);
+  // 显示题目编号
+  if (questions.length > 0) {
+    const questionsList = document.createElement('div');
+    questionsList.className = 'bank-questions';
+    questions.forEach((q, index) => {
+      const numEl = document.createElement('div');
+      numEl.className = 'bank-question-num';
+      if (index === appData.currentQuestionIndex) numEl.className += ' current';
+      if (q.revealed) numEl.className += ' revealed';
+      numEl.textContent = index + 1;
+      numEl.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        if (q.revealed) {
+          Swal.fire({ icon: 'warning', title: '该题已答过', text: '已答过的题目不能再次作答', timer: 1500, showConfirmButton: false });
+          return;
+        }
+        appData.currentQuestionIndex = index;
+        appData.showQuestion = true;
+        appData.selectedOption = null;
+        renderBankList();
+        renderQuestion();
+        await saveData();
+        // 重置并启动倒计时，语音播报
+        resetCountdown();
+        const teamName = appData.currentTeam ? appData.currentTeam.name : '';
+        const seconds = document.getElementById('countdown-input').value || 30;
+        let msg = '';
+        if (teamName) {
+          msg = teamName + '请开始作答，限时' + seconds + '秒！';
+        } else {
+          msg = '请开始作答，限时' + seconds + '秒！';
+        }
+        const utterance = new SpeechSynthesisUtterance(msg);
+        utterance.lang = 'zh-CN';
+        utterance.rate = 1.0;
+        speechSynthesis.speak(utterance);
+        utterance.onend = function() {
+          startCountdown();
+        };
+      });
+      questionsList.appendChild(numEl);
+    });
+    container.appendChild(questionsList);
+  }
+}
+
+function renderStageSwitcher() {
+  const container = document.getElementById('stage-switcher');
+  container.innerHTML = '';
+  appData.stages.forEach((stage) => {
+    const btn = document.createElement('button');
+    btn.className = 'stage-btn' + (stage === appData.currentStage ? ' active' : '');
+    btn.textContent = stage;
+    btn.addEventListener('click', async () => {
+      appData.currentStage = stage;
+      appData.currentQuestionIndex = 0;
+      appData.showQuestion = false;
+      appData.selectedOption = null;
+      renderStageSwitcher();
+      renderBankList();
+      renderQuestion();
+      await saveData();
+    });
+    container.appendChild(btn);
+  });
+}
+
+async function rescaleQuestion() {
+  const container = document.getElementById('question-display');
+  const wrapper = document.getElementById('question-content-wrapper');
+  if (!container || !wrapper) return;
+  wrapper.style.transform = '';
+  wrapper.style.width = '100%';
+  requestAnimationFrame(() => {
+    const containerHeight = container.clientHeight;
+    const contentHeight = wrapper.scrollHeight;
+    if (contentHeight > containerHeight) {
+      const scale = containerHeight / contentHeight;
+      wrapper.style.transform = 'scale(' + scale + ')';
+      wrapper.style.width = (100 / scale) + '%';
+    } else if (container.classList.contains('fullscreen')) {
+      const maxScale = Math.min(containerHeight / contentHeight, 2.5);
+      if (maxScale > 1.1) {
+        wrapper.style.transform = 'scale(' + maxScale + ')';
+        wrapper.style.width = (100 / maxScale) + '%';
+      } else {
+        wrapper.style.transform = '';
+        wrapper.style.width = '100%';
+      }
+    } else {
+      wrapper.style.transform = '';
+      wrapper.style.width = '100%';
+    }
+  });
+}
+
+function toggleFullscreen() {
+  const container = document.getElementById('question-display');
+  const btn = document.getElementById('fullscreen-toggle');
+  if (!container || !btn) return;
+  const isFullscreen = container.classList.toggle('fullscreen');
+  const icon = btn.querySelector('i');
+  if (isFullscreen) {
+    if (icon) icon.className = 'fas fa-compress';
+    btn.title = '退出全屏';
+  } else {
+    if (icon) icon.className = 'fas fa-expand';
+    btn.title = '全屏显示';
+  }
+  rescaleQuestion();
+}
+
+async function handleAnswer(q, selectedOpt) {
+  if (!appData.currentTeam) return;
+  const answer = (q.answer || '').toUpperCase().replace(/\s/g, '');
+  var optLetter;
+  if (Array.isArray(selectedOpt)) {
+    optLetter = selectedOpt.map(function(o) { return o.charAt(0).toUpperCase(); }).sort().join('');
+  } else {
+    optLetter = selectedOpt.charAt(0).toUpperCase();
+  }
+  // 多选题：正确答案没有选完不能算对；单选题：选项字母必须完全匹配答案
+  const isCorrect = answer === optLetter;
+
+  q.revealed = true;
+  q.selectedAnswer = selectedOpt;
+  pauseCountdown();
+
+  if (isCorrect) {
+    appData.currentTeam.score += 10;
+    Swal.fire({ icon: 'success', title: '回答正确！', text: appData.currentTeam.name + ' 加10分', timer: 1500, showConfirmButton: false });
+  } else {
+    if (appData.currentStage === '你说我猜') {
+      Swal.fire({ icon: 'info', title: '回答错误', text: appData.currentTeam.name + ' 你说我猜不扣分', timer: 1500, showConfirmButton: false });
+    } else {
+      appData.currentTeam.score -= 10;
+      Swal.fire({ icon: 'error', title: '回答错误！', text: appData.currentTeam.name + ' 扣10分', timer: 1500, showConfirmButton: false });
+    }
+  }
+
+  renderTeams();
+  renderQuestion();
+  await saveData();
+}
+
+function renderQuestion() {
+  const header = document.getElementById('question-header');
+  const text = document.getElementById('question-text');
+  const options = document.getElementById('question-options');
+  const questions = appData.questions[appData.currentStage] || [];
+  if (questions.length === 0) {
+    header.textContent = '暂无题目';
+    text.textContent = '请先导入题库或切换到有题目的环节';
+    options.innerHTML = '';
+    const wrapper = document.getElementById('question-content-wrapper');
+    if (wrapper) {
+      wrapper.style.transform = '';
+      wrapper.style.width = '100%';
+    }
+    return;
+  }
+  if (!appData.showQuestion) {
+    header.textContent = appData.currentStage;
+    text.textContent = '请从左侧题目库选择题目编号开始作答';
+    options.innerHTML = '';
+    const wrapper = document.getElementById('question-content-wrapper');
+    if (wrapper) {
+      wrapper.style.transform = '';
+      wrapper.style.width = '100%';
+    }
+    return;
+  }
+  if (appData.currentQuestionIndex >= questions.length) {
+    appData.currentQuestionIndex = questions.length - 1;
+  }
+  const q = questions[appData.currentQuestionIndex];
+  header.textContent = appData.currentStage + ' - 第' + (appData.currentQuestionIndex + 1) + '/' + questions.length + '题 (' + (q.type || '单选题') + ')';
+  var isImageUrl = q.question && (/\.(jpg|jpeg|png|gif|bmp|webp|svg)(\?.*)?$/i.test(q.question) || q.question.startsWith('data:image'));
+  if (isImageUrl) {
+    text.innerHTML = '<img src="' + q.question + '" style="max-width:100%;max-height:400px;border-radius:4px" alt="题目图片">';
+  } else {
+    text.textContent = q.question;
+  }
+  options.innerHTML = '';
+  if (q.options && q.options.length > 0) {
+    q.options.forEach((opt) => {
+      const div = document.createElement('div');
+      div.className = 'option-item';
+      div.textContent = opt;
+      if (!q.revealed) {
+        div.style.cursor = 'pointer';
+        div.addEventListener('click', () => {
+          if (!appData.currentTeam) {
+            Swal.fire({ icon: 'warning', title: '请先选择答题队伍', text: '点击上方队伍卡片选择当前答题队伍', timer: 2000, showConfirmButton: false });
+            return;
+          }
+          if (q.type === '多选题') {
+            if (!Array.isArray(appData.selectedOption)) {
+              appData.selectedOption = [];
+            }
+            const idx = appData.selectedOption.indexOf(opt);
+            if (idx >= 0) {
+              appData.selectedOption.splice(idx, 1);
+              if (appData.selectedOption.length === 0) {
+                appData.selectedOption = null;
+              }
+            } else {
+              appData.selectedOption.push(opt);
+            }
+          } else {
+            appData.selectedOption = opt;
+          }
+          renderQuestion();
+        });
+        var isSelected = false;
+        if (q.type === '多选题' && Array.isArray(appData.selectedOption)) {
+          isSelected = appData.selectedOption.indexOf(opt) >= 0;
+        } else {
+          isSelected = appData.selectedOption === opt;
+        }
+        if (isSelected) {
+          div.style.backgroundColor = '#E6F7FF';
+          div.style.borderColor = '#1890FF';
+          div.style.color = '#0050B3';
+          div.style.fontWeight = '600';
+        }
+      } else {
+        div.style.cursor = 'not-allowed';
+        const answer = (q.answer || '').toUpperCase().replace(/\s/g, '');
+        const optLetter = opt.charAt(0).toUpperCase();
+        const isCorrectOption = answer.includes(optLetter);
+        var isSelectedWrong = false;
+        if (Array.isArray(q.selectedAnswer)) {
+          isSelectedWrong = q.selectedAnswer.indexOf(opt) >= 0 && !isCorrectOption;
+        } else {
+          isSelectedWrong = q.selectedAnswer && q.selectedAnswer === opt && !isCorrectOption;
+        }
+        if (isCorrectOption) {
+          div.style.backgroundColor = '#f6ffed';
+          div.style.borderColor = '#52c41a';
+          div.style.color = '#389e0d';
+          div.style.fontWeight = '600';
+        } else if (isSelectedWrong) {
+          div.style.backgroundColor = '#fff2f0';
+          div.style.borderColor = '#ff4d4f';
+          div.style.color = '#cf1322';
+          div.style.fontWeight = '600';
+        } else {
+          div.style.opacity = '0.6';
+        }
+      }
+      options.appendChild(div);
+    });
+  }
+  if (q.revealed && q.answer) {
+    const answerDiv = document.createElement('div');
+    answerDiv.style.cssText = 'margin-top:12px;padding:10px 16px;background:#f6ffed;border:1px solid #b7eb8f;border-radius:4px;color:#389e0d;font-weight:600;font-size:15px';
+    let answerHtml = '<i class="fas fa-check-circle"></i> 正确答案：' + q.answer;
+    if (q.selectedAnswer) {
+      const answer = (q.answer || '').toUpperCase().replace(/\s/g, '');
+      var optLetter;
+      var selectedDisplay;
+      if (Array.isArray(q.selectedAnswer)) {
+        optLetter = q.selectedAnswer.map(function(o) { return o.charAt(0).toUpperCase(); }).sort().join('');
+        selectedDisplay = q.selectedAnswer.map(function(o) { return o.charAt(0).toUpperCase(); }).join('');
+      } else {
+        optLetter = q.selectedAnswer.charAt(0).toUpperCase();
+        selectedDisplay = q.selectedAnswer.charAt(0).toUpperCase();
+      }
+      const isCorrect = answer === optLetter;
+      if (isCorrect) {
+        answerHtml += '&nbsp;&nbsp;<span style="color:#389e0d"><i class="fas fa-thumbs-up"></i> 您的选择：' + selectedDisplay + '（正确）</span>';
+      } else {
+        answerHtml += '&nbsp;&nbsp;<span style="color:#cf1322"><i class="fas fa-times-circle"></i> 您的选择：' + selectedDisplay + '（错误）</span>';
+      }
+    }
+    answerDiv.innerHTML = answerHtml;
+    options.appendChild(answerDiv);
+  }
+  const navDiv = document.createElement('div');
+  navDiv.style.cssText = 'display:flex;gap:10px;margin-top:20px;justify-content:center;flex-wrap:wrap';
+  const prevBtn = document.createElement('button');
+  prevBtn.className = 'toolbar-btn';
+  prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i> 上一题';
+  if (appData.currentQuestionIndex === 0) {
+    prevBtn.disabled = true;
+    prevBtn.style.opacity = '0.5';
+    prevBtn.style.cursor = 'not-allowed';
+  }
+  prevBtn.addEventListener('click', async () => {
+    if (appData.currentQuestionIndex > 0) {
+      appData.currentQuestionIndex--;
+      appData.selectedOption = null;
+      renderQuestion();
+      await saveData();
+    }
+  });
+  if (!q.revealed && appData.selectedOption) {
+    const submitBtn = document.createElement('button');
+    submitBtn.className = 'toolbar-btn primary';
+    submitBtn.innerHTML = '<i class="fas fa-check"></i> 提交答案';
+    submitBtn.addEventListener('click', async () => {
+      const selectedOpt = appData.selectedOption;
+      appData.selectedOption = null;
+      await handleAnswer(q, selectedOpt);
+    });
+    navDiv.appendChild(submitBtn);
+  }
+  const revealBtn = document.createElement('button');
+  revealBtn.className = 'toolbar-btn primary';
+  revealBtn.innerHTML = q.revealed ? '<i class="fas fa-eye-slash"></i> 隐藏答案' : '<i class="fas fa-eye"></i> 揭晓答案';
+  revealBtn.addEventListener('click', async () => {
+    q.revealed = !q.revealed;
+    appData.selectedOption = null;
+    renderQuestion();
+    await saveData();
+  });
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'toolbar-btn';
+  nextBtn.innerHTML = '下一题 <i class="fas fa-chevron-right"></i>';
+  if (appData.currentQuestionIndex >= questions.length - 1) {
+    nextBtn.disabled = true;
+    nextBtn.style.opacity = '0.5';
+    nextBtn.style.cursor = 'not-allowed';
+  }
+  nextBtn.addEventListener('click', async () => {
+    if (appData.currentQuestionIndex < questions.length - 1) {
+      appData.currentQuestionIndex++;
+      appData.selectedOption = null;
+      renderQuestion();
+      await saveData();
+    }
+  });
+  navDiv.appendChild(prevBtn);
+  navDiv.appendChild(revealBtn);
+  navDiv.appendChild(nextBtn);
+  options.appendChild(navDiv);
+
+  rescaleQuestion();
+
+}
+
+async function startBuzzerCountdown() {
+  appData.buzzerLocked = false;
+  appData.buzzerWinner = null;
+
+  for (let i = 3; i >= 1; i--) {
+    if (!appData.buzzerMode) return;
+    appData.buzzerCountdown = i;
+    renderTeams();
+    updateBuzzerButton();
+    await saveData();
+    const utterance = new SpeechSynthesisUtterance(String(i));
+    utterance.lang = 'zh-CN';
+    utterance.rate = 0.8;
+    speechSynthesis.speak(utterance);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  }
+
+  if (!appData.buzzerMode) return;
+  appData.buzzerCountdown = 0;
+  renderTeams();
+  updateBuzzerButton();
+  await saveData();
+  const startUtterance = new SpeechSynthesisUtterance('开始抢答！');
+  startUtterance.lang = 'zh-CN';
+  startUtterance.rate = 1.0;
+  speechSynthesis.speak(startUtterance);
+}
+
+async function toggleBuzzerMode() {
+  appData.buzzerMode = !appData.buzzerMode;
+  if (!appData.buzzerMode) {
+    appData.buzzerLocked = false;
+    appData.buzzerWinner = null;
+    appData.buzzerCountdown = 0;
+  }
+  renderTeams();
+  updateBuzzerButton();
+  await saveData();
+  if (appData.buzzerMode) {
+    await startBuzzerCountdown();
+  }
+}
+
+async function handleBuzzer(team) {
+  if (!appData.buzzerMode || appData.buzzerLocked || appData.buzzerCountdown > 0) return;
+  appData.buzzerLocked = true;
+  appData.buzzerWinner = team;
+  appData.currentTeam = team;
+  pauseCountdown();
+  // 播放抢答提示音
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    oscillator.frequency.value = 880;
+    oscillator.type = 'sine';
+    gainNode.gain.value = 0.3;
+    oscillator.start();
+    setTimeout(() => {
+      oscillator.stop();
+      audioCtx.close();
+    }, 300);
+  } catch(e) {}
+  // 语音播报
+  const utterance = new SpeechSynthesisUtterance(team.name + '抢答成功！');
+  utterance.lang = 'zh-CN';
+  utterance.rate = 1.0;
+  speechSynthesis.speak(utterance);
+  renderTeams();
+  renderQuestion();
+  updateBuzzerButton();
+  await saveData();
+}
+
+async function resetBuzzer() {
+  await startBuzzerCountdown();
+}
+
+function updateBuzzerButton() {
+  const btn = document.getElementById('btn-buzzer');
+  const resetBtn = document.getElementById('btn-buzzer-reset');
+  if (!btn) return;
+  if (appData.buzzerMode) {
+    btn.classList.add('buzzer-active');
+    btn.innerHTML = '<i class="fas fa-bell-slash"></i> 关闭抢答';
+    if (resetBtn) resetBtn.style.display = 'flex';
+  } else {
+    btn.classList.remove('buzzer-active');
+    btn.innerHTML = '<i class="fas fa-bell"></i> 抢答模式';
+    if (resetBtn) resetBtn.style.display = 'none';
+  }
+}
+
+function handleImport() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.xlsx,.xls';
+  input.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      try {
+        const data = new Uint8Array(evt.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+        if (jsonData.length === 0) {
+          Swal.fire({ icon: 'warning', title: '导入失败', text: '文件中没有数据' });
+          return;
+        }
+        const newQuestions = {};
+        const newStages = [];
+        let totalCount = 0;
+        jsonData.forEach((row) => {
+          const stage = row['环节'] || '必答题';
+          const type = row['题型'] || '单选题';
+          const question = row['题目'] || '';
+          const optA = row['选项A'] || '';
+          const optB = row['选项B'] || '';
+          const optC = row['选项C'] || '';
+          const optD = row['选项D'] || '';
+          const answer = String(row['答案'] || '');
+          if (!question) return;
+          if (!newQuestions[stage]) {
+            newQuestions[stage] = [];
+            newStages.push(stage);
+          }
+          const options = [];
+          if (optA) options.push('A. ' + optA);
+          if (optB) options.push('B. ' + optB);
+          if (optC) options.push('C. ' + optC);
+          if (optD) options.push('D. ' + optD);
+          newQuestions[stage].push({
+            type: type,
+            question: question,
+            options: options,
+            answer: answer,
+            revealed: false
+          });
+          totalCount++;
+        });
+        if (newStages.length > 0) {
+          appData.stages = newStages;
+          appData.questions = newQuestions;
+          // 随机打乱各环节题目顺序
+          Object.keys(appData.questions).forEach(stage => {
+            const arr = appData.questions[stage];
+            for (let i = arr.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+          });
+          appData.currentStage = newStages[0];
+          appData.currentQuestionIndex = 0;
+          appData.showQuestion = false;
+          appData.selectedOption = null;
+        }
+        renderAll();
+        await saveData();
+        Swal.fire({ icon: 'success', title: '导入成功', text: '已导入 ' + totalCount + ' 道题目' });
+      } catch (err) {
+        Swal.fire({ icon: 'error', title: '导入失败', text: '文件解析错误：' + err.message });
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  });
+  input.click();
+}
+
+function handleClear() {
+  Swal.fire({
+    title: '确认清空',
+    text: '将清空所有题目和分数数据，此操作不可恢复！',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: '确认清空',
+    cancelButtonText: '取消',
+    confirmButtonColor: '#ff4d4f'
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      appData.questions = {};
+      appData.stages = ['你说我猜', '看图识隐患', '团队大比拼（必答题）', '团队大比拼（抢答题）'];
+      appData.currentStage = '必答题';
+      appData.currentQuestionIndex = 0;
+      appData.showQuestion = false;
+      appData.selectedOption = null;
+      appData.buzzerMode = false;
+      appData.buzzerLocked = false;
+      appData.buzzerWinner = null;
+      appData.buzzerCountdown = 0;
+      appData.teams.forEach((team) => { team.score = 0; });
+      renderAll();
+      await saveData();
+      Swal.fire({ icon: 'success', title: '已清空', text: '所有数据已清空' });
+    }
+  });
+}
+
+function handleTemplate() {
+  const stages = appData.stages && appData.stages.length > 0 ? appData.stages : ['必答题'];
+  const typeList = ['单选题', '判断题', '多选题'];
+  const templateData = stages.map((stage, index) => {
+    const type = typeList[index % typeList.length];
+    if (type === '判断题') {
+      return { '环节': stage, '题型': '判断题', '题目': '示例判断题（请替换）', '选项A': '对', '选项B': '错', '选项C': '', '选项D': '', '答案': 'A' };
+    } else if (type === '多选题') {
+      return { '环节': stage, '题型': '多选题', '题目': '示例多选题（请替换）', '选项A': '选项A', '选项B': '选项B', '选项C': '选项C', '选项D': '选项D', '答案': 'AB' };
+    } else {
+      return { '环节': stage, '题型': '单选题', '题目': '示例单选题（请替换）', '选项A': '选项A', '选项B': '选项B', '选项C': '选项C', '选项D': '选项D', '答案': 'A' };
+    }
+  });
+  const ws = XLSX.utils.json_to_sheet(templateData);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, '题库模板');
+  const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+  const blob = new Blob([wbout], { type: 'application/octet-stream' });
+  const url = URL.createObjectURL(blob);
+  let doc;
+  try { doc = window.parent.document; } catch (e) { doc = document; }
+  const a = doc.createElement('a');
+  a.href = url;
+  a.download = '知识竞赛题库模板.xlsx';
+  a.style.display = 'none';
+  doc.body.appendChild(a);
+  a.click();
+  doc.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function handleRules() {
+  Swal.fire({
+    title: '竞赛规则',
+    html: '<div style="text-align:left;line-height:2;font-size:14px">' +
+      '<p><b>一、"你说我猜"环节</b></p>' +
+      '<p>本环节为必答题，共设置64个关键词，分为16组，每组4个关键词，由16个参赛队伍通过抽签方式随机抽取1组进行比赛。</p>' +
+      '<p>比赛时，每支队伍依次完成本组4个关键词的竞猜，每个关键词限时1分钟。队员之间通过语言描述进行提示和作答，描述过程中不得直接说出关键词中的字词、谐音或使用明显肢体暗示。答对计10分，超时或答错不得分，进入下一关键词。</p>' +
+      '<br>' +
+      '<p><b>二、"看图识隐患"环节</b></p>' +
+      '<p>本环节为抢答题，共设置8-14个隐患识别场景图，由16支参赛队伍通过抢答器进行抢答。</p>' +
+      '<p>主持人展示隐患识别场景图后，各参赛队伍有20秒观察时间。观察时间结束后，主持人宣布"开始抢答"，各参赛队伍方可进行抢答，提前抢答视为违规。</p>' +
+      '<p>抢答成功的队伍须在30秒内指出图中存在的隐患问题。每个场景图设置4-10项隐患问题，每正确指出1项隐患加10分；未指出的隐患，每少1项扣10分。若抢答队伍未答出所有隐患，主持人可允许其他队伍补充作答，补充正确的同样计10分/项。</p>' +
+      '<br>' +
+      '<p><b>三、"团队大比拼"环节</b></p>' +
+      '<p>本环节由"必答题+抢答题"共同组成。</p>' +
+      '<p>①必答题：共设置48题，各参赛队伍通过抢答器确定答题顺序后依次作答，题目由参赛队员根据编号进行选择，每题答题时间10秒钟。答对1题加10分，答错不扣分，超时未作答或非答题队员提示、补充均视为答错。</p>' +
+      '<p>②抢答题：共设置15道单选+15道多选题目，各参赛队伍有10秒观察与思考时间，10秒结束后方可进行抢答，提前抢答视为违规。每题答题限时30秒，超时视为未作答。单选题答对得10分、多选题答对得20分，答错或超时扣10分；答题过程中如出现非答题队员提示或补充作答的，按答错处理。若抢答队伍答错或未答出，重新进行抢答。</p>' +
+      '</div>',
+    confirmButtonText: '我知道了',
+    width: 520
+  });
+}
+
+function handleCustomStage() {
+  let stagesHtml = '';
+  appData.stages.forEach((stage) => {
+    const qCount = (appData.questions[stage] || []).length;
+    stagesHtml += '<div class="swal-stage-row" style="display:flex;align-items:center;gap:8px;margin-bottom:8px">' +
+      '<input class="swal2-input swal-stage-input" data-original="' + stage + '" value="' + stage + '" style="margin:0;flex:1;height:36px;font-size:14px">' +
+      '<span style="font-size:12px;color:#8c8c8c;white-space:nowrap;min-width:36px;text-align:right">' + qCount + '题</span>' +
+      '<button class="swal-stage-del" style="padding:6px 12px;background:#ff4d4f;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:13px;white-space:nowrap"><i class="fas fa-trash"></i></button>' +
+      '</div>';
+  });
+
+  Swal.fire({
+    title: '自定义环节',
+    html: '<div style="text-align:left">' +
+      '<div style="font-size:14px;color:#595959;margin-bottom:8px">管理竞赛环节，可添加、删除、修改名称</div>' +
+      '<div id="swal-stage-list">' + stagesHtml + '</div>' +
+      '<div style="margin-top:12px;text-align:center">' +
+      '<button id="swal-stage-add" style="padding:8px 20px;background:#1890ff;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:14px;font-weight:600"><i class="fas fa-plus"></i> 添加环节</button>' +
+      '</div>' +
+      '</div>',
+    showCancelButton: true,
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    width: 480,
+    didOpen: () => {
+      document.querySelectorAll('.swal-stage-del').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          btn.parentElement.remove();
+        });
+      });
+      document.getElementById('swal-stage-add').addEventListener('click', () => {
+        const list = document.getElementById('swal-stage-list');
+        const newDiv = document.createElement('div');
+        newDiv.className = 'swal-stage-row';
+        newDiv.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:8px';
+        newDiv.innerHTML = '<input class="swal2-input swal-stage-input" data-original="" value="" placeholder="输入环节名称" style="margin:0;flex:1;height:36px;font-size:14px">' +
+          '<span style="font-size:12px;color:#8c8c8c;white-space:nowrap;min-width:36px;text-align:right">0题</span>' +
+          '<button class="swal-stage-del" style="padding:6px 12px;background:#ff4d4f;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:13px;white-space:nowrap"><i class="fas fa-trash"></i></button>';
+        list.appendChild(newDiv);
+        newDiv.querySelector('.swal-stage-del').addEventListener('click', () => {
+          newDiv.remove();
+        });
+        newDiv.querySelector('input').focus();
+      });
+    },
+    preConfirm: () => {
+      const inputs = document.querySelectorAll('.swal-stage-input');
+      const newStages = [];
+      let hasEmpty = false;
+      let hasDuplicate = false;
+      inputs.forEach((input) => {
+        const name = input.value.trim();
+        if (!name) {
+          hasEmpty = true;
+        } else {
+          if (newStages.includes(name)) {
+            hasDuplicate = true;
+          }
+          newStages.push(name);
+        }
+      });
+      if (hasEmpty) {
+        Swal.showValidationMessage('环节名称不能为空');
+        return false;
+      }
+      if (hasDuplicate) {
+        Swal.showValidationMessage('环节名称不能重复');
+        return false;
+      }
+      if (newStages.length === 0) {
+        Swal.showValidationMessage('至少保留一个环节');
+        return false;
+      }
+      const originalNames = [];
+      inputs.forEach((input) => {
+        originalNames.push(input.getAttribute('data-original') || '');
+      });
+      return { stages: newStages, originalNames: originalNames };
+    }
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      const { stages, originalNames } = result.value;
+      const newQuestions = {};
+      stages.forEach((newName, index) => {
+        const originalName = originalNames[index];
+        if (originalName && appData.questions[originalName]) {
+          newQuestions[newName] = appData.questions[originalName];
+        } else if (appData.questions[newName]) {
+          newQuestions[newName] = appData.questions[newName];
+        } else {
+          newQuestions[newName] = [];
+        }
+      });
+      appData.stages = stages;
+      appData.questions = newQuestions;
+      if (!stages.includes(appData.currentStage)) {
+        appData.currentStage = stages[0];
+        appData.currentQuestionIndex = 0;
+        appData.showQuestion = false;
+        appData.selectedOption = null;
+      }
+      renderAll();
+      await saveData();
+    }
+  });
+}
+
+function handleTeamCount() {
+  let teamsHtml = '';
+  appData.teams.forEach((team, index) => {
+    teamsHtml += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">' +
+      '<span style="font-size:13px;color:#595959;min-width:50px">队伍' + (index + 1) + '</span>' +
+      '<input id="swal-team-name-' + index + '" class="swal2-input" value="' + team.name + '" style="margin:0;width:100%;height:36px;font-size:14px">' +
+      '</div>';
+  });
+  Swal.fire({
+    title: '自定义队伍',
+    html: '<div style="text-align:left">' +
+      '<div style="margin-bottom:12px;display:flex;align-items:center;gap:8px">' +
+      '<span style="font-size:14px;font-weight:600">队伍数量：</span>' +
+      '<input id="swal-team-count" type="number" class="swal2-input" value="' + appData.teamCount + '" min="2" max="20" style="margin:0;width:80px;height:36px;text-align:center">' +
+      '</div>' +
+      '<div style="border-top:1px solid #e8e8e8;padding-top:12px;margin-top:8px">' +
+      '<div style="font-size:14px;font-weight:600;margin-bottom:8px">队伍名称：</div>' +
+      '<div id="swal-team-names">' + teamsHtml + '</div>' +
+      '</div>' +
+      '</div>',
+    showCancelButton: true,
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    width: 480,
+    didOpen: () => {
+      const countInput = document.getElementById('swal-team-count');
+      const namesContainer = document.getElementById('swal-team-names');
+      countInput.addEventListener('input', () => {
+        const count = parseInt(countInput.value);
+        if (isNaN(count) || count < 2 || count > 20) return;
+        const currentNames = [];
+        for (let i = 0; i < 30; i++) {
+          const input = document.getElementById('swal-team-name-' + i);
+          if (input) currentNames[i] = input.value;
+        }
+        let newHtml = '';
+        for (let i = 0; i < count; i++) {
+          const defaultTeamNames = ['成本物资代表队', '综合财务代表队', '采剥代表队', '胶排代表队', '设备代表队', '工程管理代表队', '达力爆破代表队', '云南集拓代表队', '云南乐志代表队', '云南交建代表队', '山水工贸代表队', '地矿地质代表队', '易初明通代表队', '嵩掘机电代表队', '云利特代表队', '君盛卓代表队'];
+          const defaultName = i < appData.teams.length ? appData.teams[i].name : (i < defaultTeamNames.length ? defaultTeamNames[i] : '第' + (i + 1) + '队');
+          const name = currentNames[i] !== undefined ? currentNames[i] : defaultName;
+          newHtml += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">' +
+            '<span style="font-size:13px;color:#595959;min-width:50px">队伍' + (i + 1) + '</span>' +
+            '<input id="swal-team-name-' + i + '" class="swal2-input" value="' + name + '" style="margin:0;width:100%;height:36px;font-size:14px">' +
+            '</div>';
+        }
+        namesContainer.innerHTML = newHtml;
+      });
+    },
+    preConfirm: () => {
+      const count = parseInt(document.getElementById('swal-team-count').value);
+      if (isNaN(count) || count < 2 || count > 20) {
+        Swal.showValidationMessage('请输入2-20之间的数字');
+        return false;
+      }
+      const names = [];
+      for (let i = 0; i < count; i++) {
+        const nameInput = document.getElementById('swal-team-name-' + i);
+        const name = nameInput ? nameInput.value.trim() : '';
+        if (!name) {
+          Swal.showValidationMessage('队伍名称不能为空');
+          return false;
+        }
+        names.push(name);
+      }
+      return { count: count, names: names };
+    }
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      const { count, names } = result.value;
+      appData.teamCount = count;
+      while (appData.teams.length < count) {
+        const idx = appData.teams.length;
+        appData.teams.push({ id: idx + 1, name: names[idx] || '第' + (idx + 1) + '队', score: 0 });
+      }
+      while (appData.teams.length > count) {
+        appData.teams.pop();
+      }
+      appData.teams.forEach((team, index) => {
+        if (names[index]) {
+          team.name = names[index];
+        }
+      });
+      renderTeams();
+      await saveData();
+    }
+  });
+}
+
+// 倒计时相关变量
+let countdownTimer = null;
+let countdownRunning = false;
+let countdownSeconds = 30;
+
+
+
+function updateCountdownButtons() {
+  const startBtn = document.getElementById('countdown-start');
+  const pauseBtn = document.getElementById('countdown-pause');
+  const input = document.getElementById('countdown-input');
+  if (!startBtn || !pauseBtn || !input) return;
+  if (countdownRunning) {
+    startBtn.style.display = 'none';
+    pauseBtn.style.display = 'flex';
+    input.disabled = true;
+  } else {
+    startBtn.style.display = 'flex';
+    pauseBtn.style.display = 'none';
+    input.disabled = false;
+  }
+}
+
+function startCountdown() {
+  if (countdownRunning) return;
+  if (countdownSeconds <= 0) {
+    countdownSeconds = parseInt(document.getElementById('countdown-input').value) || 30;
+  }
+  countdownRunning = true;
+  updateCountdownButtons();
+  const display = document.getElementById('countdown-display');
+  display.textContent = countdownSeconds;
+  display.style.color = '#FFFFFF';
+  display.style.fontSize = '18px';
+  countdownTimer = setInterval(() => {
+    countdownSeconds--;
+    display.textContent = countdownSeconds;
+    if (countdownSeconds <= 10) display.style.color = '#faad14';
+    if (countdownSeconds <= 5) display.style.color = '#ff4d4f';
+    if (countdownSeconds <= 5 && countdownSeconds > 0) {
+      var secUtterance = new SpeechSynthesisUtterance(String(countdownSeconds));
+      secUtterance.lang = 'zh-CN';
+      secUtterance.rate = 1.0;
+      speechSynthesis.speak(secUtterance);
+    }
+    if (countdownSeconds <= 0) {
+      clearInterval(countdownTimer);
+      countdownTimer = null;
+      countdownRunning = false;
+      display.textContent = '时间到!';
+      display.style.fontSize = '14px';
+      display.style.color = '#ff4d4f';
+      updateCountdownButtons();
+      var endUtterance = new SpeechSynthesisUtterance('时间到！');
+      endUtterance.lang = 'zh-CN';
+      endUtterance.rate = 1.0;
+      speechSynthesis.speak(endUtterance);
+    }
+  }, 1000);
+}
+
+function pauseCountdown() {
+  if (!countdownRunning) return;
+  clearInterval(countdownTimer);
+  countdownTimer = null;
+  countdownRunning = false;
+  updateCountdownButtons();
+}
+
+function resetCountdown() {
+  if (countdownTimer) {
+    clearInterval(countdownTimer);
+    countdownTimer = null;
+  }
+  countdownRunning = false;
+  countdownSeconds = parseInt(document.getElementById('countdown-input').value) || 30;
+  const display = document.getElementById('countdown-display');
+  display.textContent = countdownSeconds;
+  display.style.color = '#FFFFFF';
+  display.style.fontSize = '18px';
+  updateCountdownButtons();
+}
+
+function handleAddImageQuestion() {
+  let stageOptions = appData.stages.map(s => '<option value="' + s + '">' + s + '</option>').join('');
+  Swal.fire({
+    title: '添加图片题目',
+    html: '<div style="text-align:left;font-size:14px;line-height:2">' +
+      '<div style="margin-bottom:6px"><b>所属环节：</b><select id="img-stage" style="width:100%;height:36px;border:1px solid #d9d9d9;border-radius:4px;padding:0 8px;font-size:14px">' + stageOptions + '</select></div>' +
+      '<div style="margin-bottom:6px"><b>题目图片：</b><input id="img-file" type="file" accept="image/*" style="width:100%;font-size:14px"></div>' +
+      '<div style="margin-bottom:6px"><b>或输入图片URL：</b><input id="img-url" class="swal2-input" placeholder="https://example.com/image.jpg" style="margin:0;width:100%"></div>' +
+      '<div style="margin-bottom:6px"><b>题型：</b><select id="img-type" style="width:100%;height:36px;border:1px solid #d9d9d9;border-radius:4px;padding:0 8px;font-size:14px"><option value="看图识隐患">看图识隐患</option><option value="单选题">单选题</option><option value="判断题">判断题</option><option value="多选题">多选题</option></select></div>' +
+      '<div style="margin-bottom:6px"><b>选项A：</b><input id="img-optA" class="swal2-input" placeholder="选项A内容" style="margin:0;width:100%"></div>' +
+      '<div style="margin-bottom:6px"><b>选项B：</b><input id="img-optB" class="swal2-input" placeholder="选项B内容" style="margin:0;width:100%"></div>' +
+      '<div style="margin-bottom:6px"><b>选项C：</b><input id="img-optC" class="swal2-input" placeholder="选项C内容（可选）" style="margin:0;width:100%"></div>' +
+      '<div style="margin-bottom:6px"><b>选项D：</b><input id="img-optD" class="swal2-input" placeholder="选项D内容（可选）" style="margin:0;width:100%"></div>' +
+      '<div style="margin-bottom:6px"><b>正确答案：</b><input id="img-answer" class="swal2-input" placeholder="如：A、B、AB等" style="margin:0;width:100%"></div>' +
+      '</div>',
+    showCancelButton: true,
+    confirmButtonText: '添加',
+    cancelButtonText: '取消',
+    width: 520,
+    preConfirm: () => {
+      const stage = document.getElementById('img-stage').value;
+      const url = document.getElementById('img-url').value.trim();
+      const file = document.getElementById('img-file').files[0];
+      const type = document.getElementById('img-type').value;
+      const optA = document.getElementById('img-optA').value.trim();
+      const optB = document.getElementById('img-optB').value.trim();
+      const optC = document.getElementById('img-optC').value.trim();
+      const optD = document.getElementById('img-optD').value.trim();
+      const answer = document.getElementById('img-answer').value.trim();
+      if (!url && !file) {
+        Swal.showValidationMessage('请上传图片或输入图片URL');
+        return false;
+      }
+      if (!answer) {
+        Swal.showValidationMessage('请输入正确答案');
+        return false;
+      }
+      return { stage: stage, url: url, file: file, type: type, optA: optA, optB: optB, optC: optC, optD: optD, answer: answer };
+    }
+  }).then(async (result) => {
+    if (!result.isConfirmed) return;
+    const data = result.value;
+    let imageUrl = data.url;
+    if (data.file) {
+      imageUrl = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.readAsDataURL(data.file);
+      });
+    }
+    if (!imageUrl) return;
+    const options = [];
+    if (data.optA) options.push('A. ' + data.optA);
+    if (data.optB) options.push('B. ' + data.optB);
+    if (data.optC) options.push('C. ' + data.optC);
+    if (data.optD) options.push('D. ' + data.optD);
+    if (!appData.questions[data.stage]) {
+      appData.questions[data.stage] = [];
+      if (!appData.stages.includes(data.stage)) {
+        appData.stages.push(data.stage);
+      }
+    }
+    appData.questions[data.stage].push({
+      type: data.type,
+      question: imageUrl,
+      options: options,
+      answer: data.answer,
+      revealed: false
+    });
+    appData.currentStage = data.stage;
+    appData.currentQuestionIndex = appData.questions[data.stage].length - 1;
+    appData.showQuestion = true;
+    appData.selectedOption = null;
+    renderAll();
+    await saveData();
+    Swal.fire({ icon: 'success', title: '添加成功', text: '图片题目已添加到 ' + data.stage });
+  });
+}
+
+function showRanking() {
+  const overlay = document.getElementById('ranking-overlay');
+  const list = document.getElementById('ranking-list');
+  const sortedTeams = [...appData.teams].sort((a, b) => b.score - a.score);
+  list.innerHTML = '';
+  sortedTeams.forEach((team, index) => {
+    const item = document.createElement('div');
+    let rankClass = '';
+    if (index === 0) rankClass = ' top1';
+    else if (index === 1) rankClass = ' top2';
+    else if (index === 2) rankClass = ' top3';
+    item.className = 'ranking-item' + rankClass;
+    item.innerHTML =
+      '<div class="ranking-rank">' + (index + 1) + '</div>' +
+      '<div class="ranking-team-name">' + team.name + '</div>' +
+      '<div class="ranking-team-score">' + team.score + '<span>分</span></div>';
+    list.appendChild(item);
+  });
+  overlay.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function hideRanking() {
+  const overlay = document.getElementById('ranking-overlay');
+  overlay.classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function initEventListeners() {
+  document.getElementById('btn-import').addEventListener('click', handleImport);
+  document.getElementById('btn-clear').addEventListener('click', handleClear);
+  document.getElementById('btn-template').addEventListener('click', handleTemplate);
+  document.getElementById('btn-rules').addEventListener('click', handleRules);
+  document.getElementById('btn-custom-stage').addEventListener('click', handleCustomStage);
+  document.getElementById('btn-team-count').addEventListener('click', handleTeamCount);
+
+  document.getElementById('countdown-start').addEventListener('click', startCountdown);
+  document.getElementById('countdown-pause').addEventListener('click', pauseCountdown);
+  document.getElementById('countdown-reset').addEventListener('click', resetCountdown);
+  document.getElementById('countdown-input').addEventListener('change', () => {
+    if (!countdownRunning) {
+      countdownSeconds = parseInt(document.getElementById('countdown-input').value) || 30;
+      const display = document.getElementById('countdown-display');
+      if (display) {
+        display.textContent = countdownSeconds;
+        display.style.color = '#FFFFFF';
+        display.style.fontSize = '18px';
+      }
+    }
+  });
+  document.getElementById('btn-add-image').addEventListener('click', handleAddImageQuestion);
+  document.getElementById('btn-buzzer').addEventListener('click', toggleBuzzerMode);
+  document.getElementById('btn-buzzer-reset').addEventListener('click', resetBuzzer);
+  document.getElementById('btn-share-buzzer').addEventListener('click', handleShareBuzzerLinks);
+  document.getElementById('header-logo').addEventListener('click', handleLogoUpload);
+  document.getElementById('btn-ranking').addEventListener('click', showRanking);
+  document.getElementById('ranking-close').addEventListener('click', hideRanking);
+  document.getElementById('fullscreen-toggle').addEventListener('click', toggleFullscreen);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const container = document.getElementById('question-display');
+      if (container && container.classList.contains('fullscreen')) {
+        toggleFullscreen();
+      }
+    }
+    // 抢答模式键盘快捷键：数字键1-9对应队伍1-9
+    if (appData.buzzerMode && !appData.buzzerLocked && appData.buzzerCountdown <= 0 && e.key >= '1' && e.key <= '9') {
+      const target = e.target;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT') return;
+      const teamIndex = parseInt(e.key) - 1;
+      if (teamIndex < appData.teams.length) {
+        handleBuzzer(appData.teams[teamIndex]);
+      }
+    }
+  });
+
+  window.addEventListener('resize', () => {
+    rescaleQuestion();
+    adjustTeamNameSize();
+  });
+}
+
+async function initBuzzerPage(teamId) {
+  const teamIdNum = parseInt(teamId);
+  let teamName = '第' + teamIdNum + '队';
+  if (appId) {
+    try {
+      const response = await window.api.load(appId);
+      if (response && response.data && response.data.teams) {
+        const team = response.data.teams.find(t => t.id === teamIdNum);
+        if (team) teamName = team.name;
+      }
+    } catch(e) {}
+  }
+  document.title = teamName + ' - 抢答';
+  document.body.innerHTML = '<div class="buzzer-page" id="buzzer-page">' +
+    '<div class="buzzer-page-team-name" id="buzzer-team-name">' + teamName + '</div>' +
+    '<button class="buzzer-page-btn disabled" id="buzzer-page-btn">抢答</button>' +
+    '<div class="buzzer-page-status" id="buzzer-page-status">等待主持人开启抢答...</div>' +
+    '</div>';
+  let hasBuzzed = false;
+  const btn = document.getElementById('buzzer-page-btn');
+  const status = document.getElementById('buzzer-page-status');
+  btn.addEventListener('click', async () => {
+    if (hasBuzzed || btn.classList.contains('disabled')) return;
+    if (appId) {
+      try {
+        const response = await window.api.load(appId);
+        if (response && response.data) {
+          const data = response.data;
+          if (data.buzzerMode && !data.buzzerLocked) {
+            data.buzzerSignal = { teamId: teamIdNum, timestamp: Date.now() };
+            await window.api.save(appId, data);
+            hasBuzzed = true;
+            btn.classList.add('disabled');
+            btn.textContent = '已抢答';
+            btn.style.animation = 'none';
+            status.textContent = '抢答成功！等待主持人确认...';
+            status.className = 'buzzer-page-status success';
+            if (navigator.vibrate) navigator.vibrate(200);
+            try {
+              const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+              const oscillator = audioCtx.createOscillator();
+              const gainNode = audioCtx.createGain();
+              oscillator.connect(gainNode);
+              gainNode.connect(audioCtx.destination);
+              oscillator.frequency.value = 880;
+              oscillator.type = 'sine';
+              gainNode.gain.value = 0.3;
+              oscillator.start();
+              setTimeout(() => { oscillator.stop(); audioCtx.close(); }, 300);
+            } catch(e) {}
+          } else {
+            status.textContent = '抢答未开启或已结束';
+            status.className = 'buzzer-page-status fail';
+          }
+        }
+      } catch(e) {
+        console.error(e);
+      }
+    }
+  });
+  setInterval(async () => {
+    if (!appId) return;
+    try {
+      const response = await window.api.load(appId);
+      if (response && response.data) {
+        const data = response.data;
+        if (data.teams) {
+          const team = data.teams.find(t => t.id === teamIdNum);
+          if (team) {
+            document.getElementById('buzzer-team-name').textContent = team.name;
+          }
+        }
+        if (!data.buzzerMode) {
+          btn.classList.add('disabled');
+          btn.style.animation = 'none';
+          if (!hasBuzzed) {
+            status.textContent = '等待主持人开启抢答...';
+            status.className = 'buzzer-page-status';
+          }
+        } else if (data.buzzerCountdown && data.buzzerCountdown > 0) {
+          btn.classList.add('disabled');
+          btn.style.animation = 'none';
+          btn.textContent = data.buzzerCountdown;
+          status.textContent = '倒计时 ' + data.buzzerCountdown + '...';
+          status.className = 'buzzer-page-status';
+        } else if (data.buzzerLocked && data.buzzerWinner) {
+          btn.classList.add('disabled');
+          btn.style.animation = 'none';
+          if (data.buzzerWinner.id === teamIdNum) {
+            status.textContent = '🎉 你抢答成功！等待主持人确认...';
+            status.className = 'buzzer-page-status success';
+          } else {
+            status.textContent = data.buzzerWinner.name + ' 已抢答成功';
+            status.className = 'buzzer-page-status fail';
+            hasBuzzed = true;
+            btn.textContent = '已结束';
+          }
+        } else {
+          if (!hasBuzzed) {
+            btn.classList.remove('disabled');
+            btn.style.animation = '';
+            btn.textContent = '抢答';
+            status.textContent = '抢答已开启！点击按钮抢答！';
+            status.className = 'buzzer-page-status';
+          }
+        }
+        if (data.buzzerMode && !data.buzzerLocked && !data.buzzerWinner && hasBuzzed) {
+          hasBuzzed = false;
+          btn.classList.remove('disabled');
+          btn.style.animation = '';
+          btn.textContent = '抢答';
+          status.textContent = '抢答已重置！点击按钮抢答！';
+          status.className = 'buzzer-page-status';
+        }
+      }
+    } catch(e) {}
+  }, 1000);
+}
+
+function handleShareBuzzerLinks() {
+  if (!appId) {
+    Swal.fire({ icon: 'warning', title: '提示', text: '缺少应用ID，无法生成链接' });
+    return;
+  }
+  let linksHtml = '';
+  appData.teams.forEach((team) => {
+    const url = window.location.origin + window.location.pathname + '?app_id=' + appId + '&buzzer=' + team.id;
+    linksHtml += '<div style="margin-bottom:8px;display:flex;align-items:center;gap:8px">' +
+      '<span style="font-weight:600;min-width:60px">' + team.name + '：</span>' +
+      '<input type="text" value="' + url + '" readonly style="flex:1;padding:6px 8px;border:1px solid #d9d9d9;border-radius:4px;font-size:12px;background:#fff" id="swal-buzzer-link-' + team.id + '">' +
+      '<button onclick="var input=document.getElementById(\'swal-buzzer-link-' + team.id + '\');input.select();navigator.clipboard.writeText(input.value)" style="padding:6px 12px;background:#1890ff;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:12px;white-space:nowrap"><i class="fas fa-copy"></i> 复制</button>' +
+      '</div>';
+  });
+  Swal.fire({
+    title: '分享抢答链接',
+    html: '<div style="text-align:left;font-size:14px;line-height:1.8">' +
+      '<p style="margin-bottom:12px;color:#595959">将以下链接分别分享给对应队伍，队员打开后即可参与抢答。</p>' +
+      linksHtml +
+      '</div>',
+    width: 520,
+    confirmButtonText: '关闭'
+  });
+}
+
+let lastBuzzerSignalTimestamp = 0;
+
+function startBuzzerSignalPolling() {
+  if (!appId) return;
+  setInterval(async () => {
+    if (!appData.buzzerMode || appData.buzzerLocked) return;
+    try {
+      const response = await window.api.load(appId);
+      if (response && response.data && response.data.buzzerSignal) {
+        const signal = response.data.buzzerSignal;
+        if (signal && signal.timestamp > lastBuzzerSignalTimestamp) {
+          lastBuzzerSignalTimestamp = signal.timestamp;
+          const team = appData.teams.find(t => t.id === signal.teamId);
+          if (team) {
+            appData.buzzerSignal = null;
+            await handleBuzzer(team);
+          }
+        }
+      }
+    } catch(e) {}
+  }, 500);
+}
+
+async function init() {
+  const buzzerTeamId = new URLSearchParams(window.location.search).get('buzzer');
+  if (buzzerTeamId) {
+    await initBuzzerPage(buzzerTeamId);
+    return;
+  }
+  initEventListeners();
+  await loadData();
+  startBuzzerSignalPolling();
+}
+
+init();
+</script>
+
+</body></html>
